@@ -10,5 +10,6 @@ defmodule RestApiWeb.Router do
 
     # added by JC
     get "/data", DataController, :index
+    post "/data", DataController, :post
   end
 end

@@ -7,3 +7,6 @@ erl_crash.dump
 *.ez
 *.beam
 /config/*.secret.exs
+
+# File format for the datastores should be ignored
+*.dets

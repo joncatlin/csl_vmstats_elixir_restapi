@@ -16,7 +16,21 @@ config :rest_api, RestApiWeb.Endpoint,
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
-  metadata: [:user_id]
+  compile_time_purge_matching: [
+      [module: DataPointsStore, level_lower_than: :error],
+      [module: DataPoints, level_lower_than: :info],
+    ],
+    metadata: [:user_id]
+
+  config :logger,
+  backends: [:console],
+  compile_time_purge_matching: [
+#    [application: :data_points],
+    [module: DataPointsStore, level_lower_than: :error],
+    [module: DataPoints, level_lower_than: :info],
+ #   [module: DataPoints, function: "foo/3", level_lower_than: :debug]
+  ]
+
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

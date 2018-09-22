@@ -10,6 +10,7 @@ defmodule RestApi.Application do
     children = [
       # Start the endpoint when the application starts
       supervisor(RestApiWeb.Endpoint, []),
+      {DataPoints, name: DataPoints}
       # Start your own worker by calling: RestApi.Worker.start_link(arg1, arg2, arg3)
       # worker(RestApi.Worker, [arg1, arg2, arg3]),
     ]
