@@ -1,5 +1,5 @@
 defmodule DataPointsStore do
-  
+
   require Logger
 
   ## Constants
@@ -14,7 +14,9 @@ defmodule DataPointsStore do
     name = get_name(machine, date.year, date.month, date.day)
     Logger.debug("Starting DataPointsStore with name=#{inspect name}")
 
-    dir = "./DataPointsStore-files/" <> machine
+
+#    dir = "./DataPointsStore-files/" <> machine
+    dir = "/mnt/VM-File-Storage/temp/vmstats_data/DataPointsStore-files/" <> machine
     filename = dir <> "/#{name}.dets"
     Logger.info("Starting store with filename=#{inspect filename}")
 
@@ -23,10 +25,10 @@ defmodule DataPointsStore do
     # if the dir does not exist then mkdir
     # if it exists return the data
     data = case File.read(filename) do
-      {:ok, ""} -> 
+      {:ok, ""} ->
         # empty file
         @empty_map
-      {:ok, bin} -> 
+      {:ok, bin} ->
         try do
           :erlang.binary_to_term(bin)
         rescue

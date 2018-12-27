@@ -1,5 +1,5 @@
 defmodule DataPoints do
-  
+
   use GenServer
   require Logger
 
@@ -32,9 +32,9 @@ defmodule DataPoints do
 
   defp to_float(string_value) do
     cond do
-      string_value == "" -> 
+      string_value == "" ->
         0.0
-      true -> 
+      true ->
         {value, _} = Float.parse(string_value)
         value
     end
@@ -55,7 +55,8 @@ defmodule DataPoints do
 
   @impl true
   def init(_name) do
-    dir = "C:/temp/vmstats_data/"
+#    dir = "C:/temp/vmstats_data/"
+    dir = "/mnt/VM-File-Storage/temp/vmstats_data/"
     type = "*.[cC][sS][vV]"
     path = dir <> type
 
@@ -77,7 +78,7 @@ defmodule DataPoints do
     result = find_new_files(state.path, state.existing_files)
     case result do
       %{:found => _files, :new => []} -> Logger.debug("No new files found")
-      %{:found => _files, :new => new_files} -> 
+      %{:found => _files, :new => new_files} ->
         process_new_files1(new_files)
       %{} -> Logger.error("This should never happen. No match in handle_info")
     end
@@ -118,7 +119,7 @@ defmodule DataPoints do
       file_list
       |> Enum.map(&(process_file2(&1)))
   end
-      
+
   defp process_file2(filename) do
     Logger.debug("File name to process=#{filename} in state=#{inspect self()}")
     filename
@@ -130,8 +131,8 @@ defmodule DataPoints do
   end
 
   defp process_chunk_for_same_machine_and_date(chunk) do
-    
-    [head | _tail] = chunk    
+
+    [head | _tail] = chunk
     machine = head.machine
     date = head.date
     [month, day, year] = String.split(date, "/")
@@ -157,29 +158,29 @@ defmodule DataPoints do
   defp store_chunk(points, machine, date, date_struct, state) do
 
     [head | tail] = points
-    
+
     [hours, minutes, seconds] = String.split(head.time, ":")
     time_in_s = (String.to_integer(hours) * 60 * 60) + (String.to_integer(minutes) * 60) + String.to_integer(seconds)
-    
-    point = 
-      %DataPoints{machine: machine, 
+
+    point =
+      %DataPoints{machine: machine,
         date: date_struct,
-        time: time_in_s, 
+        time: time_in_s,
         data: [
-          "mem_max", to_float(head.mem_max), 
-          "mem_min", to_float(head.mem_min), 
-          "mem_avg", to_float(head.mem_avg), 
-          "cpu_max", to_float(head.cpu_max), 
-          "cpu_min", to_float(head.cpu_min), 
-          "cpu_avg", to_float(head.cpu_avg), 
-          "net_max", to_float(head.net_max), 
-          "net_min", to_float(head.net_min), 
+          "mem_max", to_float(head.mem_max),
+          "mem_min", to_float(head.mem_min),
+          "mem_avg", to_float(head.mem_avg),
+          "cpu_max", to_float(head.cpu_max),
+          "cpu_min", to_float(head.cpu_min),
+          "cpu_avg", to_float(head.cpu_avg),
+          "net_max", to_float(head.net_max),
+          "net_min", to_float(head.net_min),
           "net_avg", to_float(head.net_avg)
         ]
       }
 
     newstate = DataPointsStore.save_point(point, state)
-    
+
     # recurse
     store_chunk(tail, machine, date, date_struct, newstate)
   end
